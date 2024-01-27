@@ -1,0 +1,66 @@
+<!DOCTYPE html><!DOCTYPE html>
+<html>
+
+<head>
+    <title>Kerawanan Banjir dan Genangan</title>
+    <link rel="stylesheet" href="library/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="library/leaflet/leaflet.js"></script>
+    <script src="library/leaflet-providers-master/leaflet-providers.js"></script>
+    <script src="library/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="map">
+        <script>
+            var map = L.map('map').setView([-7.804595101800344, 110.48596645881771], 14);
+
+            var baseLayers = {
+                'Esri WorldImagery': L.tileLayer.provider('Esri.WorldImagery').addTo(map),
+                'Esri WorldTopoMap': L.tileLayer.provider('Esri.WorldTopoMap'),
+                'OSM Default': L.tileLayer.provider('OpenStreetMap.DE'),
+                'OSM France': L.tileLayer.provider('OpenStreetMap.France')
+            };
+
+
+            /* Memanggil Layer Rawan Banjir */
+            var AreaRawanBanjir = L.geoJson(null, {
+                style: function(feature) {
+                    return {
+                        color: "black",
+                        fillColor: KlasBanjir[feature.properties.Bahaya],
+                        weight: 0.3,
+                        opacity: 0,
+                        fillOpacity: 0.7
+                    };
+                },
+                onEachFeature: function( feature, layer ){
+                    layer.bindPopup(
+                        "Kategori : " + "<left>" + feature.properties.Bahaya + "</left>" + "<br>" +
+                        "Luas :" + "<left>" + feature.properties.Shape_Area + "</left>" + " m2"
+                        )
+                }
+            });
+            $.getJSON("data/Rawan Banjir.json", function(data) {
+                AreaRawanBanjir.addData(data);
+            });
+
+            /* Merubah Tampilan Warna Berdasar Atribut Klas Banjir */
+            var KlasBanjir = {
+                "Rendah":"#8a8af2",
+                "Sedang":"#36369c",
+                "Tinggi":"#0a0a5c",
+                
+    
+            };
+
+            var mapLayers = {
+                'Area Rawan Banjir': AreaRawanBanjir
+            };
+
+            L.control.layers(baseLayers, mapLayers).addTo(map);
+        </script>
+    </div>
+</body>
+
+</html>
